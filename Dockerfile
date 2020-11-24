@@ -17,4 +17,4 @@ COPY --from=builder /opt/target/scala-2.12/flink-playgrounds-scala.jar /opt/flin
 RUN echo "execution.checkpointing.interval: 10s" >> /opt/flink/conf/flink-conf.yaml; \
     echo "pipeline.object-reuse: true" >> /opt/flink/conf/flink-conf.yaml; \
     echo "pipeline.time-characteristic: EventTime" >> /opt/flink/conf/flink-conf.yaml; \
-    echo "taskmanager.memory.jvm-metaspace.size: 256m" >> /opt/flink/conf/flink-conf.yaml;
+    echo "taskmanager.memory.jvm-metaspace.size: 512m" >> /opt/flink/conf/flink-conf.yaml;
