@@ -6,12 +6,14 @@ import org.apache.flink.table.api.{EnvironmentSettings, Table, TableEnvironment}
 object GroupChatMessageRMU extends App {
 
   override def main(args: Array[String]): Unit = {
+    println("\n\n\nMAIN FUNCTION EXECUTED\n\n\n")
     val settings = EnvironmentSettings.newInstance().build()
     val tEnv = TableEnvironment.create(settings)
     execute(tEnv)
   }
 
   private def report(messagesTable: Table): Table = {
+    println("\n\n\nREPORT FUNCTION EXECUTED\n\n\n")
     messagesTable.select(
       $("message_id"),
       $("group_chat_id"),
@@ -19,17 +21,18 @@ object GroupChatMessageRMU extends App {
       $("sequence_no"),
       $("body"),
       $("create_at"))
-      //.groupBy($("message_id"))
-      //.select($("message_id"),
-      //  $("group_chat_id"),
-      //  $("account_id"),
-      //  $("sequence_no"),
-      //  $("body"),
-      //  $("create_at")) //TODO???
+      .groupBy($("message_id"), $("group_chat_id"), $("account_id"), $("body"))
+      .select($("message_id"),
+        $("group_chat_id"),
+        $("account_id"),
+        $("sequence_no").max().as("sequence_no"),
+        $("body"),
+        $("create_at").max().as("created_at")) //TODO???
   }
 
   private def execute(tEnv: TableEnvironment): Unit = {
-    tEnv.executeSql("CREATE TABLE group_chat_messages (\n" +
+    println("\n\n\nEXECUTE FUNCTION EXECUTED\n\n\n")
+    val tableResult =  tEnv.executeSql("CREATE TABLE group_chat_messages (\n" +
       "    message_id  BIGINT,\n" +
       "    group_chat_id BIGINT,\n" +
       "    account_id  BIGINT,\n" +
@@ -44,8 +47,9 @@ object GroupChatMessageRMU extends App {
       "    'format'    = 'csv'\n" +
       ")"
     )
+    tableResult.print()
 
-    tEnv.executeSql("CREATE TABLE group_chat_messages_batch (\n" +
+    val batchTableResult = tEnv.executeSql("CREATE TABLE group_chat_messages_batch (\n" +
       "    message_id  BIGINT PRIMARY KEY,\n" +
       "    group_chat_id BIGINT,\n" +
       "    account_id  BIGINT,\n" +
@@ -59,8 +63,10 @@ object GroupChatMessageRMU extends App {
       "  'driver'     = 'com.mysql.jdbc.Driver',\n" +
       "  'username'   = 'sql-demo',\n" + "  'password'   = 'demo-sql'\n" + ")"
     )
+    batchTableResult.print()
 
     val transactions = tEnv.from("group_chat_messages")
-    report(transactions).executeInsert("group_chat_messages_batch")
+    val executeInsertResult = report(transactions).executeInsert("group_chat_messages_batch")
+    executeInsertResult.print()
   }
 }

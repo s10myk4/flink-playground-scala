@@ -6,6 +6,8 @@ import example.models.Message
 
 import scala.annotation.tailrec
 import scala.io.StdIn
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 object TablePlayground extends App with Terminal {
 
@@ -21,8 +23,10 @@ object TablePlayground extends App with Terminal {
         case Command.Message(groupChatId, accountId, messageId, sequenceNo, body) =>
           val m = Message(messageId = messageId, groupChatId = groupChatId, accountId = accountId,
             sequenceNo = sequenceNo, body = body, LocalDateTime.now())
-          kafkaProducer.execute(m)
-          println(s"created message $m")
+          kafkaProducer.execute(m).onComplete {
+            case Success(v) => println(s"created message $m")
+            case Failure(e) => throw e
+          }
           commandLoop()
         case Command.Quit =>
           println("Quit terminal")
