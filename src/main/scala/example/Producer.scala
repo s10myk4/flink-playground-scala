@@ -1,15 +1,16 @@
 package example
 
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Properties
 
 import example.Producer.getProperties
 import example.models.Message
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
-import org.apache.kafka.common.serialization.{LongSerializer, StringSerializer}
+import org.apache.kafka.common.serialization.StringSerializer
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class Producer(broker: String, topic: String){
 
@@ -29,17 +30,13 @@ object Producer {
 
   import org.apache.kafka.common.serialization.Serializer
 
-  class MessageSerializer extends Serializer[Message] {
-    override def serialize(topic: String, data: Message): Array[Byte] = {
-      import java.time.LocalDateTime
-      import java.time.format.DateTimeFormatter
-      import java.util.Locale
-      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.nnn", Locale.JAPAN)
-      val localDate = LocalDateTime.parse(data.createAt.toString, formatter)
-      val createdAt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(localDate)
 
+  class MessageSerializer extends Serializer[Message] {
+    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+    override def serialize(topic: String, data: Message): Array[Byte] = {
       val csv = "%s, %s, %s, %s, %s, %s".format(
-        data.messageId, data.groupChatId, data.accountId, data.sequenceNo, data.body, createdAt
+        data.messageId, data.groupChatId, data.accountId, data.sequenceNo, data.body, data.createAt.format(formatter)
       )
       csv.getBytes
     }
