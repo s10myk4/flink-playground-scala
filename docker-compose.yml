@@ -44,6 +44,7 @@ services:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: "kafka"
       KAFKA_ADVERTISED_PORT: "9092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
       HOSTNAME_COMMAND: "route -n | awk '/UG[ \t]/{print $$2}'"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       #https://github.com/wurstmeister/kafka-docker#automatically-create-topics

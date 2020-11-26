@@ -10,6 +10,11 @@ trait Terminal {
 
     case object Quit extends Command
 
+    case class Transaction(
+                            accountId: Long,
+                            amount: Int //取引金額
+                          ) extends Command
+
     case class Message(
                         groupChatId: Long,
                         accountId: Long,
@@ -24,7 +29,8 @@ trait Terminal {
 
   }
 
-  private val parser: CommandParser.Parser[Command] = CommandParser.createMessage | CommandParser.quit
+  private val parser: CommandParser.Parser[Command] =
+    CommandParser.createMessage | CommandParser.createTx | CommandParser.quit
 
   private object CommandParser extends RegexParsers {
 
@@ -42,9 +48,18 @@ trait Terminal {
       }
     }
 
+    def createTx: Parser[Command.Transaction] = {
+      ("transaction|tx".r ~> long ~ int) ^^ {
+        case accountId ~ amount =>
+          Command.Transaction(accountId, amount)
+      }
+    }
+
     def quit: Parser[Command.Quit.type] = "quit|q".r ^^ (_ => Command.Quit)
 
     def long: Parser[Long] = """\d+""".r ^^ (_.toLong)
+
+    def int: Parser[Int] = """\d+""".r ^^ (_.toInt)
   }
 
 

@@ -1,8 +1,6 @@
 package example.models
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util
 
 case class Transaction(
                         accountId: Long,
@@ -10,7 +8,3 @@ case class Transaction(
                         timestamp: LocalDateTime
                       )
 
-object Transaction {
-
-
-}

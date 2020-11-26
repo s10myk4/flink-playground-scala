@@ -13,7 +13,7 @@ help:
 	@grep -E '^[a-zA-Z/_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?##"}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 up: ## docker-compose up [TARGET_NAME]
-	@docker-compose up -d $(call args,defaultstring)
+	@docker-compose up -d $(call args, )
 
 ps: ## docker-compose ps
 	@docker-compose ps
@@ -28,10 +28,10 @@ kafka/topic-describe: ## kafka/topic-describe TOPIC=[TARGET_NAME]
 	$(DC_CMD) $(KAFKA_CONTAINER_NAME) $(KAFKA_BIN_DIR)/kafka-topics.sh --describe --zookeeper zookeeper:$(ZOOKEEPER_PORT) --topic $(TOPIC)
 
 kafka/topic-create: ## kafka/topic-create [NAME]
-	$(DC_CMD) $(KAFKA_CONTAINER_NAME) $(KAFKA_BIN_DIR)/kafka-topics.sh --create --zookeeper zookeeper:$(ZOOKEEPER_PORT) --topic $(call args,"") --partitions 1 --replication-factor 1
+	$(DC_CMD) $(KAFKA_CONTAINER_NAME) $(KAFKA_BIN_DIR)/kafka-topics.sh --create --zookeeper zookeeper:$(ZOOKEEPER_PORT) --topic $(call args, ) --partitions 1 --replication-factor 1
 
 kafka/topic-delete: ## kafka/topic-delete [TARGET_NAME]
-	$(DC_CMD) $(KAFKA_CONTAINER_NAME) $(KAFKA_BIN_DIR)/kafka-topics.sh --delete --zookeeper zookeeper:$(ZOOKEEPER_PORT) --topic $(call args,"")
+	$(DC_CMD) $(KAFKA_CONTAINER_NAME) $(KAFKA_BIN_DIR)/kafka-topics.sh --delete --zookeeper zookeeper:$(ZOOKEEPER_PORT) --topic $(call args, )
 
 mysql/show-tables: ## show db tables
 	$(DC_CMD) mysql $(MYSQL_CMD) -e 'show tables'
@@ -39,4 +39,8 @@ mysql/show-tables: ## show db tables
 mysql/prompt: ## start mysql prompt
 	$(DC_CMD) mysql $(MYSQL_CMD)
 
-.PHONY: help topic-list topic-describe up ps
+flink/job-list: ## job list
+	$(DC_CMD) jobmanager flink list
+
+.PHONY: help up ps build kafka/topic-list kafka/topic-describe kafka/topic-create kafka/topic-delete mysql/prompt mysql/show-tables flink/job-list
+
