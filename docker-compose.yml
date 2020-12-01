@@ -15,7 +15,7 @@ services:
       - kafka
       - mysql
     volumes:
-    - ./flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
+    - ./flink-conf-jobmanager.yaml:/opt/flink/conf/flink-conf.yaml
   taskmanager:
     image: flink-scala
     build: .
@@ -30,7 +30,9 @@ services:
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     volumes:
-    - ./flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
+    - ./flink-conf-taskmanager.yaml:/opt/flink/conf/flink-conf.yaml
+  data-generator:
+    image: apache/data-generator:1
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
     ports:
