@@ -8,7 +8,7 @@ import java.util.Properties
 import example.TransactionTopicProducer._
 import example.models.Transaction
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
-import org.apache.kafka.common.serialization.StringSerializer
+import org.apache.kafka.common.serialization.{LongSerializer, StringSerializer}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -51,7 +51,7 @@ object TransactionTopicProducer {
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, broker)
     props.put(ProducerConfig.ACKS_CONFIG, "all")
     props.put(ProducerConfig.RETRIES_CONFIG, "0")
-    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer])
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[LongSerializer])
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[TransactionSerializer])
     props
   }
