@@ -1,5 +1,17 @@
 version: '2.1'
 services:
+  sql-client:
+    image: flink-sql-client
+    build: ./sql-client
+    command: sleep 5000
+    depends_on:
+      - kafka
+      - jobmanager
+    environment:
+      FLINK_JOBMANAGER_HOST: jobmanager
+      ZOOKEEPER_CONNECT: zookeeper
+      KAFKA_BOOTSTRAP: kafka
+      MYSQL_HOST: mysql
   jobmanager:
     image: flink-scala
     build: .
@@ -7,13 +19,10 @@ services:
     expose:
       - "6123"
     ports:
-      - "8082:8081"
-    command: standalone-job
+      - "8081:8081"
+    command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
-    depends_on:
-      - kafka
-      - mysql
     volumes:
     - ./flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
   taskmanager:
@@ -55,20 +64,10 @@ services:
     image: mysql:8.0.22
     command: --default-authentication-plugin=mysql_native_password --secure_file_priv=/data
     environment:
-      MYSQL_USER: "sql-demo"
-      MYSQL_PASSWORD: "demo-sql"
-      MYSQL_DATABASE: "sql-demo"
+      MYSQL_USER: "flink"
+      MYSQL_PASSWORD: "secret"
+      MYSQL_DATABASE: "flinksql"
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
     volumes:
       - ./init-script:/docker-entrypoint-initdb.d
       - ./data:/data
-  #grafana:
-  #  image: grafana/grafana
-  #  ports:
-  #    - "3000:3000"
-  #  depends_on:
-  #    - mysql
-  #  volumes:
-  #    - ../docker/grafana-spend-report-init/provisioning/:/etc/grafana/provisioning/
-  #    - ../docker/grafana-spend-report-init/dashboard.json:/etc/grafana/dashboard.json
-  #    - ../docker/grafana-spend-report-init/grafana.ini:/etc/grafana/grafana.ini
