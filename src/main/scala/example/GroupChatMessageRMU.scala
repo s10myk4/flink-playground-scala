@@ -58,10 +58,10 @@ object GroupChatMessageRMU extends App {
       "    create_at   TIMESTAMP(3)\n" +
       ") WITH (\n" +
       "  'connector'  = 'jdbc',\n" +
-      "  'url'        = 'jdbc:mysql://mysql:3306/sql-demo',\n" +
+      "  'url'        = 'jdbc:mysql://mysql:3306/flinksql',\n" +
       "  'table-name' = 'group_chat_messages_batch',\n" +
       "  'driver'     = 'com.mysql.jdbc.Driver',\n" +
-      "  'username'   = 'sql-demo',\n" + "  'password'   = 'demo-sql'\n" + ")"
+      "  'username'   = 'flink',\n" + "  'password'   = 'secret'\n" + ")"
     )
     batchTableResult.print()
 
